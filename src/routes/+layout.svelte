@@ -28,7 +28,7 @@
 			</ul>
 		</nav>
 	</div>
-	<main class="flex-1 p-5 overflow-auto">
+	<main class="flex-1 p-5 overflow-auto bg-white">
 		<slot />
 	</main>
 </div>

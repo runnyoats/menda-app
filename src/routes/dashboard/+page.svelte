@@ -2,22 +2,17 @@
 	// You can put any JavaScript code here
 </script>
 
-<div class="container">
-	<h1>MENDA Dashboard</h1>
-	<p>This is the Mental Health Dashboard for SMK Datuk Hj. Mohamed Nor Ahmad.</p>
-	<iframe
-		title="menda-dashboard-draft-7"
-		width="100%"
-		height="541.25"
-		src="https://app.powerbi.com/reportEmbed?reportId=ec7675a9-76b7-48b5-b805-54ac051b2d8c&autoAuth=true&ctid=0ad0fbf8-69ca-4e5e-afad-cd70424ac626"
-		frameborder="0"
-		allowFullScreen="true"
-	/>
+<div class="min-h-screen bg-gray-100 flex items-center justify-center">
+	<div class="bg-white p-10 rounded-lg shadow-md w-full h-full max-w-screen-lg">
+		<h2 class="text-2xl font-bold mb-10 text-gray-800 text-center">MENDA Dashboard</h2>
+		<div class="relative w-full h-0 overflow-hidden" style="padding-bottom: 80%;">
+			<iframe
+				class="absolute top-0 left-0 w-full h-full"
+				title="menda-dashboard-draft-9"
+				src="https://app.powerbi.com/reportEmbed?reportId=d8c65d37-d0f6-4610-9447-fb9f120c2e48&autoAuth=true&ctid=0ad0fbf8-69ca-4e5e-afad-cd70424ac626"
+				frameborder="0"
+				allowFullScreen="true"
+			/>
+		</div>
+	</div>
 </div>
-
-<style>
-	.container {
-		width: 90%;
-		max-width: 930px;
-	}
-</style>

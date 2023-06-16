@@ -9,3 +9,5 @@ node_modules
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 src/stores/student_data.csv
+src/stores/phq9_data.csv
+src/stores/backup csv/student_data.csv

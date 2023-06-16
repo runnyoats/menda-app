@@ -1,14 +1,26 @@
 <script>
+	import axios from 'axios';
+
 	let username = '';
 	let password = '';
 	let year = new Date().getFullYear();
 	const years = Array.from({ length: year - 2019 }, (_, i) => year - i);
+
+	async function handleSubmit(event) {
+		event.preventDefault(); // prevent the form from submitting normally
+		const response = await axios.post('http://localhost:5000/api', {
+			username,
+			password,
+			year // include year data
+		});
+		console.log(response.data);
+	}
 </script>
 
 <div class="min-h-screen bg-gray-100 flex items-center justify-center">
 	<div class="bg-white p-10 rounded-lg shadow-md w-80">
 		<h2 class="text-2xl font-bold mb-10 text-gray-800 text-center">Sync Data</h2>
-		<form>
+		<form on:submit={handleSubmit}>
 			<div class="space-y-5">
 				<div>
 					<label for="username" class="block text-sm font-medium text-gray-700">Username</label>
@@ -53,3 +65,15 @@
 		</form>
 	</div>
 </div>
+
+<style lang="postcss">
+	.hovered {
+		@apply text-white !important;
+		@apply bg-primary;
+	}
+
+	.options {
+		max-height: calc(50vh);
+		overflow-y: auto;
+	}
+</style>

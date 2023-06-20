@@ -1,12 +1,7 @@
-from flask import Flask, request, jsonify
-from flask_cors import CORS
 import pandas as pd
 import numpy as np
 import requests as rqst
 from bs4 import BeautifulSoup as bs
-
-app = Flask(__name__)
-CORS(app)
 
 
 # Function to log into the site
@@ -164,34 +159,22 @@ def extract_phq9_data(session):
     return f"Produced phq9_data.csv."
 
 
-@app.route("/api", methods=["POST"])
-def api():
-    data = request.get_json()
-    username = data.get("username")
-    password = data.get("password")
-    year = data.get("year")
-
+def sepkm_scraper(username, password, year):
     session = rqst.Session()
 
     if not login(session, username, password):
-        return jsonify({"error": "Login failed"}), 401
+        return {"error": "Login failed"}, 401
 
     if not change_year(session, year):
-        return jsonify({"error": "Year change failed"}), 400
+        return {"error": "Year change failed"}, 400
 
     student_data_message = extract_student_data(session)
     phq9_data_message = extract_phq9_data(session)
 
-    return jsonify(
-        {
-            "username": username,
-            "password": password,
-            "year": year,
-            "message_student_data": student_data_message,
-            "message_phq9_data": phq9_data_message,
-        }
-    )
-
-
-if __name__ == "__main__":
-    app.run(port=5000)
+    return {
+        "username": username,
+        "password": password,
+        "year": year,
+        "message_student_data": student_data_message,
+        "message_phq9_data": phq9_data_message,
+    }

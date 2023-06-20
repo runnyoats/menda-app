@@ -11,3 +11,6 @@ vite.config.ts.timestamp-*
 src/stores/student_data.csv
 src/stores/phq9_data.csv
 src/stores/backup csv/student_data.csv
+file-structure.txt
+src/api/__pycache__/murid_data.cpython-39.pyc
+src/api/__pycache__/sepkm_scraper.cpython-39.pyc

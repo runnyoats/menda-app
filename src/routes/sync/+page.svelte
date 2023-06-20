@@ -8,7 +8,7 @@
 
 	async function handleSubmit(event) {
 		event.preventDefault(); // prevent the form from submitting normally
-		const response = await axios.post('http://localhost:5000/api', {
+		const response = await axios.post('http://localhost:5000/sepkm_scraper', {
 			username,
 			password,
 			year // include year data

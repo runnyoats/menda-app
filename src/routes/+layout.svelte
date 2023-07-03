@@ -1,4 +1,5 @@
 <script>
+	import Title from '../components/Title.svelte';
 	import { page } from '$app/stores';
 	import '../app.css';
 	const routes = [
@@ -10,8 +11,9 @@
 </script>
 
 <div class="flex h-screen bg-gray-200">
-	<div class="p-5 bg-white w-64 space-y-4">
-		<h1 class="text-2xl font-bold text-gray-700">Mental Health Dashboard</h1>
+	<div class="p-5 bg-background">
+		<Title />
+		<!--<h1 class="text-2xl font-bold text-gray-700">Mental Health Dashboard</h1> -->
 		<nav>
 			<ul>
 				{#each routes as route}
@@ -28,7 +30,7 @@
 			</ul>
 		</nav>
 	</div>
-	<main class="flex-1 p-5 overflow-auto bg-white">
+	<main class="flex-1 p-5 overflow-auto bg-green-300">
 		<slot />
 	</main>
 </div>

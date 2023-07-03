@@ -32,7 +32,9 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@mdi/js": "^7.2.96",
 		"axios": "^1.4.0",
-		"daisyui": "^2.52.0"
+		"daisyui": "^2.52.0",
+		"svelte-simple-modal": "^1.6.1"
 	}
 }

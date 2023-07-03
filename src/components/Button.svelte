@@ -35,7 +35,7 @@
 			py = 'py-2';
 			break;
 		case 'sm':
-			px = 'px-1';
+			px = 'px-2';
 			py = 'py-1';
 			break;
 	}

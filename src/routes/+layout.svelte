@@ -3,19 +3,20 @@
 	import { page } from '$app/stores';
 	import '../app.css';
 	import SidebarItem from '../components/SidebarItem.svelte';
+	import Modal from 'svelte-simple-modal';
 
 	const routes = [
 		{ href: '/dashboard', name: 'Dashboard' },
 		{ href: '/sync', name: 'Sync Data' },
 		{ href: '/murid', name: 'Murid' },
-		{ href: '/logout', name: 'Log Out' }
+		{ href: '/logout', name: 'Log Out' },
+		{ href: '/test', name: 'Testing' }
 	];
 </script>
 
 <div class="flex h-screen bg-gray-200">
 	<div class="p-5 bg-background px-5 py-5 z-10">
 		<Title />
-		<!--<h1 class="text-2xl font-bold text-gray-700">Mental Health Dashboard</h1> -->
 		<nav>
 			<ul>
 				{#each routes as route}
@@ -31,7 +32,9 @@
 			</ul>
 		</nav>
 	</div>
-	<main class="flex-1 p-5 overflow-auto bg-background-secondary">
-		<slot />
-	</main>
+	<Modal>
+		<main class="flex-1 p-5 overflow-auto bg-background-secondary">
+			<slot />
+		</main>
+	</Modal>
 </div>

@@ -1,6 +1,6 @@
 <script>
 	import axios from 'axios';
-	import ExportButton from '../../components/ExportButton.svelte';
+	import Button from '../../components/ExportButton.svelte';
 
 	let username = '';
 	let password = '';
@@ -32,6 +32,19 @@
 		}
 	}
 </script>
+
+<h1 class="font-display font-black text-4xl text-white text-center md:text-left md:mr-4">
+	Synchronize Data
+</h1>
+
+<!--
+<div class="flex">
+	<Button className="mr-4" on:click={openImportExportModal}>
+		<Icon path={mdiSwapVertical} className="mr-2" />
+		{$t('settings.exportButton')}
+	</Button>
+</div>
+-->
 
 <div class="min-h-screen bg-background-secondary flex items-center justify-center">
 	<div class="bg-white p-10 rounded-lg shadow-md w-80">
@@ -80,24 +93,7 @@
 			</div>
 		</form>
 		<p class="mt-5 text-gray-500 text-center">{message}</p>
-		<div class="mt-5 flex space-x-4">
-			<button
-				class="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white {dataSynced
-					? 'bg-blue-600'
-					: 'bg-gray-400'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-				disabled={!dataSynced}
-			>
-				Append Data
-			</button>
-			<button
-				class="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white {dataSynced
-					? 'bg-red-600'
-					: 'bg-gray-400'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-				disabled={!dataSynced}
-			>
-				Overwrite Data
-			</button>
-		</div>
+		<div class="mt-5 flex space-x-4" />
 	</div>
 </div>
 

@@ -1,23 +1,39 @@
 <script>
 	import axios from 'axios';
+	import ExportButton from '../../components/ExportButton.svelte';
 
 	let username = '';
 	let password = '';
 	let year = new Date().getFullYear();
 	const years = Array.from({ length: year - 2019 }, (_, i) => year - i);
+	let message = '';
+	let dataSynced = false; // new variable to track if data is synced
 
 	async function handleSubmit(event) {
-		event.preventDefault(); // prevent the form from submitting normally
-		const response = await axios.post('http://localhost:5000/sepkm_scraper', {
-			username,
-			password,
-			year // include year data
-		});
-		console.log(response.data);
+		event.preventDefault();
+		try {
+			const response = await axios.post('http://localhost:5000/sepkm_scraper', {
+				username,
+				password,
+				year
+			});
+			console.log(response.data);
+			message = `Success: ${response.data.message_student_data}, ${response.data.message_phq9_data}`;
+			//dataSynced = true; // set dataSynced to true if successful
+			dataSynced = false; // set dataSynced to true if successful
+		} catch (error) {
+			if (error.response && error.response.data) {
+				const errorData = error.response.data;
+				message = `Error ${errorData[1]}: ${errorData[0].error}`;
+			} else {
+				message = error.toString();
+			}
+			dataSynced = false; // set dataSynced to false if there is an error
+		}
 	}
 </script>
 
-<div class="min-h-screen bg-gray-100 flex items-center justify-center">
+<div class="min-h-screen bg-background-secondary flex items-center justify-center">
 	<div class="bg-white p-10 rounded-lg shadow-md w-80">
 		<h2 class="text-2xl font-bold mb-10 text-gray-800 text-center">Sync Data</h2>
 		<form on:submit={handleSubmit}>
@@ -63,6 +79,25 @@
 				</div>
 			</div>
 		</form>
+		<p class="mt-5 text-gray-500 text-center">{message}</p>
+		<div class="mt-5 flex space-x-4">
+			<button
+				class="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white {dataSynced
+					? 'bg-blue-600'
+					: 'bg-gray-400'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+				disabled={!dataSynced}
+			>
+				Append Data
+			</button>
+			<button
+				class="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white {dataSynced
+					? 'bg-red-600'
+					: 'bg-gray-400'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+				disabled={!dataSynced}
+			>
+				Overwrite Data
+			</button>
+		</div>
 	</div>
 </div>
 

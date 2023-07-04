@@ -67,7 +67,7 @@
 	<h1 class="font-display font-black text-4xl text-white text-center md:text-left md:mr-4">
 		Synchronize Data
 	</h1>
-	<Button on:click={openExportImportModal}>Import / Export to Excel</Button>
+	<Button on:click={openExportImportModal}>Export to Excel / Import Data</Button>
 	<!--<Button on:click={openHowTo}>
 		<Icon size={0.8} path={mdiHelpCircle} />
 		How to Use

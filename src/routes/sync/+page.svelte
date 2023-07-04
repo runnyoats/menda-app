@@ -5,6 +5,7 @@
 	import ExportImportModal from './_exportImportModal.svelte';
 	import { mdiArrowDown, mdiArrowUp, mdiHelpCircle } from '@mdi/js';
 	import Icon from '../../components/Icon.svelte';
+	import HowToModal from './SyncHowToModal.svelte';
 
 	const { open: openModal } = getContext('simple-modal');
 
@@ -15,6 +16,17 @@
 			{
 				closeButton: false,
 				styleWindow: { background: '#25294A', width: '550px' }
+			}
+		);
+	}
+
+	function openHowTo() {
+		openModal(
+			HowToModal,
+			{},
+			{
+				closeButton: false,
+				styleWindow: { background: '#25294A', width: '1280px' }
 			}
 		);
 	}
@@ -56,6 +68,10 @@
 		Synchronize Data
 	</h1>
 	<Button on:click={openExportImportModal}>Import / Export to Excel</Button>
+	<!--<Button on:click={openHowTo}>
+		<Icon size={0.8} path={mdiHelpCircle} />
+		How to Use
+	</Button>-->
 </div>
 
 <div class="min-h-screen bg-background-secondary flex items-center justify-center">

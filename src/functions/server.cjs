@@ -38,7 +38,8 @@ const upload = multer({ storage: storage });
 app.post('/import', upload.single('file'), (req, res) => {
 	// Run import.py script on the uploaded file
 	const filePath = req.file.path;
-	exec(`python3 ./src/functions/import.py ${filePath}`, (error, stdout, stderr) => {
+	// Quote the file path to handle spaces
+	exec(`python3 ./src/functions/import.py "${filePath}"`, (error, stdout, stderr) => {
 		if (error) {
 			console.log(`error: ${error.message}`);
 			return;

@@ -8,11 +8,21 @@
 		if (input) input.click();
 	}
 
-	function importData() {
+	async function importData() {
 		if (files && files.length > 0) {
-			// Handle Excel file here
-			// Since Excel file handling is outside the scope of this
-			// question, I've left this part blank.
+			const data = new FormData();
+			data.append('file', files[0]);
+
+			const response = await fetch('http://localhost:3000/import', {
+				method: 'POST',
+				body: data
+			});
+
+			if (response.ok) {
+				console.log('Data imported successfully');
+			} else {
+				console.log('Failed to import data');
+			}
 		}
 	}
 

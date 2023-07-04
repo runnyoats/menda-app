@@ -14,3 +14,6 @@ src/stores/backup csv/student_data.csv
 file-structure.txt
 src/api/__pycache__/murid_data.cpython-39.pyc
 src/api/__pycache__/sepkm_scraper.cpython-39.pyc
+src/functions/students_data.xlsx
+students_submissions_data.xlsx
+students_data.xlsx

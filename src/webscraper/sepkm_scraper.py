@@ -21,7 +21,7 @@ def change_year(session, year):
 
 
 # Function to extract data
-def extract_student_data(session):
+def extract_students(session):
     student_url = "https://sepkm.com/e/data_murid.php"
     params_class = {"tingkatan": "", "kelas": ""}
     table = []
@@ -76,8 +76,8 @@ def extract_student_data(session):
     return f"Produced student_data.csv."
 
 
-# Function to extract PHQ9 data
-def getPHQ9Data(table, tableBody):
+# Function to extract table data for PHQ9, GAD7 & SEMAK
+def get_table_data(table, tableBody):
     for trTag in tableBody.find_all("tr", {"bgcolor": "#b3ffec"}):
         for tdTag in trTag.find_all("td"):
             table.append(tdTag.text)
@@ -103,7 +103,7 @@ def getPHQ9Data(table, tableBody):
     return table
 
 
-def extract_phq9_data(session):
+def extract_phq9(session):
     phq_url = "https://sepkm.com/e/minda_sihat3.php?id=PHQ9"
     params_page = {"page": ""}
 
@@ -123,7 +123,7 @@ def extract_phq9_data(session):
         if not tableBody or not tableBody.text.strip():
             break
 
-        table = getPHQ9Data(table, tableBody)
+        table = get_table_data(table, tableBody)
 
     # Reshape and print
     npTable = np.array(table).reshape(-1, 16)
@@ -159,6 +159,129 @@ def extract_phq9_data(session):
     return f"Produced phq9_data.csv."
 
 
+def extract_gad7(session):
+    gad_url = "https://sepkm.com/e/minda_sihat3.php?id=GAD7"
+    params_page = {"page": ""}
+
+    # Testing purposes
+    # page = [str(i) for i in range(1, 1001)]
+    page = [str(i) for i in range(1, 3)]
+
+    table = []
+    for p in page:
+        params_page["page"] = p
+        response = session.get(gad_url, params=params_page)
+        soup = bs(response.content, features="lxml")
+        tableBody = soup.tbody
+        print(f"Processing GAD-7 page {p}")
+
+        # If tbody is effectively empty, break the loop
+        if not tableBody or not tableBody.text.strip():
+            break
+
+        table = get_table_data(table, tableBody)
+
+    # Reshape and print
+    npTable = np.array(table).reshape(-1, 14)
+
+    # Convert to dataframe
+    row_headers = [
+        "no",
+        "nama",
+        "kelas",
+        "gad_1",
+        "gad_2",
+        "gad_3",
+        "gad_4",
+        "gad_5",
+        "gad_6",
+        "gad_7",
+        "gad_tarikh",
+        "gad_jumlah",
+        "krisis",
+        "gad_intervensi",
+    ]
+    df_gad = pd.DataFrame(npTable, columns=row_headers)
+
+    # Data cleaning
+    df_gad = df_gad.drop(columns=["no", "krisis"])
+    df_gad["gad_tarikh"] = df_gad["gad_tarikh"].str.replace("\n", "")
+    df_gad["gad_tarikh"] = df_gad["gad_tarikh"].str.replace(" ", "")
+
+    # Convert df to csv
+    df_gad.to_csv("gad7_data.csv")
+    return f"Produced gad7_data.csv."
+
+
+def extract_semak(session):
+    semak_url = "https://sepkm.com/e/minda_sihat_semak.php"
+    params_page = {"page": ""}
+
+    # Testing purposes
+    # page = [str(i) for i in range(1, 1001)]
+    page = [str(i) for i in range(1, 3)]
+
+    table = []
+    for p in page:
+        params_page["page"] = p
+        response = session.get(semak_url, params=params_page)
+        soup = bs(response.content, features="lxml")
+        tableBody = soup.tbody
+        print(f"Processing SEMAK page {p}")
+
+        # If tbody is effectively empty, break the loop
+        if not tableBody or not tableBody.text.strip():
+            break
+
+        table = get_table_data(table, tableBody)
+
+    # Reshape and print
+    npTable = np.array(table).reshape(-1, 29)
+
+    # Convert to dataframe
+    row_headers = [
+        "no",
+        "nama",
+        "kelas",
+        "semak_tarikh",
+        "semak_1",
+        "semak_2",
+        "semak_3",
+        "semak_4",
+        "semak_5",
+        "semak_6",
+        "semak_7",
+        "semak_8",
+        "semak_9",
+        "semak_10",
+        "semak_11",
+        "semak_12",
+        "semak_13",
+        "semak_14",
+        "semak_15",
+        "semak_16",
+        "semak_17",
+        "semak_18",
+        "semak_19",
+        "semak_20",
+        "semak_21",
+        "semak_22",
+        "semak_23",
+        "semak_24",
+        "semak_25",
+    ]
+    df_semak = pd.DataFrame(npTable, columns=row_headers)
+
+    # Data cleaning
+    df_semak = df_semak.drop(columns=["no"])
+    df_semak["semak_tarikh"] = df_semak["semak_tarikh"].str.replace("\n", "")
+    df_semak["semak_tarikh"] = df_semak["semak_tarikh"].str.replace(" ", "")
+
+    # Convert df to csv
+    df_semak.to_csv("semak_data.csv")
+    return f"Produced semak_data.csv."
+
+
 def sepkm_scraper(username, password, year):
     session = rqst.Session()
 
@@ -168,8 +291,10 @@ def sepkm_scraper(username, password, year):
     if not change_year(session, year):
         return {"error": "Year change failed"}, 400
 
-    student_data_message = extract_student_data(session)
-    phq9_data_message = extract_phq9_data(session)
+    student_data_message = extract_students(session)
+    phq9_data_message = extract_phq9(session)
+    gad7_data_message = extract_gad7(session)
+    semak_data_message = extract_semak(session)
 
     return {
         "username": username,
@@ -177,4 +302,9 @@ def sepkm_scraper(username, password, year):
         "year": year,
         "message_student_data": student_data_message,
         "message_phq9_data": phq9_data_message,
+        "message_gad7_data": gad7_data_message,
+        "message_semak_data": semak_data_message,
     }
+
+
+# sepkm_scraper("pee1101", "pgb", "2022")

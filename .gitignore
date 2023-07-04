@@ -17,3 +17,10 @@ src/api/__pycache__/sepkm_scraper.cpython-39.pyc
 src/functions/students_data.xlsx
 students_submissions_data.xlsx
 students_data.xlsx
+src/functions/tmp/paimonmoe_wish_history.xlsx
+src/webscraper/student_data.csv
+src/webscraper/phq9_data.csv
+student_data.csv
+semak_data.csv
+phq9_data.csv
+gad7_data.csv

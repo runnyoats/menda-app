@@ -22,7 +22,7 @@
 		const url = window.URL.createObjectURL(blob);
 		const a = document.createElement('a');
 		a.href = url;
-		a.download = 'students_data.xlsx';
+		a.download = 'students_submissions_data.xlsx';
 		a.click();
 	}
 </script>

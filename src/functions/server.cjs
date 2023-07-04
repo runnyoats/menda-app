@@ -17,7 +17,7 @@ app.get('/export', (req, res) => {
 			res.sendStatus(500);
 			return;
 		}
-		res.download('./students_data.xlsx');
+		res.download('./students_submissions_data.xlsx');
 	});
 });
 

@@ -99,10 +99,13 @@ submissions_columns = [
 
 # Split df into df_students and df_submissions
 df_students = df[students_columns].copy()
-df_submissions = df[submissions_columns]
+df_submissions = df[submissions_columns].copy()
 
 # Remove duplicates from df_students based on 'kp'
 df_students.drop_duplicates(subset=["kp"], keep="first", inplace=True)
+
+# Remove rows where submissions are missing
+df_submissions = df_submissions.dropna(subset=["sidang"])
 
 # Write DataFrame to the 'students' and 'submissions' tables
 # Be careful with this - make sure to backup your data

@@ -9,7 +9,7 @@ df_students = pd.read_sql("SELECT * FROM students", con=engine)
 df_submissions = pd.read_sql("SELECT * FROM submissions", con=engine)
 
 # Joining the tables on the 'kp' column
-df_joined = pd.merge(df_students, df_submissions, on="kp", how="right")
+df_joined = pd.merge(df_students, df_submissions, on="kp", how="left")
 
 # Drop unneeded column
 df_joined.drop("submission_id", axis=1, inplace=True)

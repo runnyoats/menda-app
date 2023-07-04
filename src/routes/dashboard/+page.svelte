@@ -1,6 +1,13 @@
-<h1 class="font-display font-black text-4xl text-white text-center md:text-left md:mr-4">
-	Power BI Dashboard
-</h1>
+<script>
+	import Button from '../../components/Button.svelte';
+</script>
+
+<div class="flex items-center">
+	<h1 class="font-display font-black text-4xl text-white text-center md:text-left md:mr-4">
+		Power BI Dashboard
+	</h1>
+	<Button>Export Current Visual</Button>
+</div>
 
 <div class="rounded-xl p-4 border border-gray-400 bg-white">
 	<div class="relative w-full h-0 overflow-hidden" style="padding-bottom: 50%;">

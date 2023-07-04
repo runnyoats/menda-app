@@ -15,7 +15,8 @@
 </script>
 
 <div class="flex h-screen bg-gray-200">
-	<div class="p-5 bg-background px-5 py-5 z-10">
+	<div class="p-5 bg-background px-5 py-5 z-10 flex flex-col items-center">
+		<!--<div class="p-5 bg-background px-5 py-5 z-10">-->
 		<Title />
 		<nav>
 			<ul>

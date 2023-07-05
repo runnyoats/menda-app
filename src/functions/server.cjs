@@ -54,6 +54,28 @@ app.post('/import', upload.single('file'), (req, res) => {
 	res.send('Data imported successfully');
 });
 
+app.post('/sync', express.json(), (req, res) => {
+	const { username, password, year } = req.body;
+
+	exec(
+		`python3 ./src/webscraper/sepkm_scraper.py "${username}" "${password}" "${year}"`,
+		(error, stdout, stderr) => {
+			if (error) {
+				console.log(`error: ${error.message}`);
+				res.status(500).send({ error: error.message });
+				return;
+			}
+			if (stderr) {
+				console.log(`stderr: ${stderr}`);
+				res.status(500).send({ error: stderr });
+				return;
+			}
+
+			res.status(200).send({ message: stdout });
+		}
+	);
+});
+
 app.listen(port, () => {
 	console.log(`Server running at http://localhost:${port}/`);
 });

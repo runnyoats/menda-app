@@ -40,25 +40,17 @@
 
 	async function handleSubmit(event) {
 		event.preventDefault();
+
 		try {
-			const response = await axios.post('http://localhost:5000/sepkm_scraper', {
+			const response = await axios.post('http://localhost:3000/sync', {
 				username,
 				password,
 				year
 			});
-			console.log(response.data);
 
-			message = `Success: ${response.data.message_student_data}, ${response.data.message_phq9_data}`;
-			//dataSynced = true; // set dataSynced to true if successful
-			dataSynced = false; // set dataSynced to true if successful
+			message = response.data.message;
 		} catch (error) {
-			if (error.response && error.response.data) {
-				const errorData = error.response.data;
-				message = `Error ${errorData[1]}: ${errorData[0].error}`;
-			} else {
-				message = error.toString();
-			}
-			dataSynced = false; // set dataSynced to false if there is an error
+			message = error.message;
 		}
 	}
 </script>

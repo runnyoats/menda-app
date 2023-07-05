@@ -307,4 +307,17 @@ def sepkm_scraper(username, password, year):
     }
 
 
+if __name__ == "__main__":
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Scraper for SEPKM")
+    parser.add_argument("username", type=str, help="Username for SEPKM")
+    parser.add_argument("password", type=str, help="Password for SEPKM")
+    parser.add_argument("year", type=int, help="Year for data scraping")
+    args = parser.parse_args()
+
+    result = sepkm_scraper(args.username, args.password, args.year)
+    print(result)
+
+
 # sepkm_scraper("pee1101", "pgb", "2022")

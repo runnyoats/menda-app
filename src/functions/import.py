@@ -7,7 +7,7 @@ import pymysql
 
 # Establish database connection
 conn = pymysql.connect(
-    db="menda_04",
+    db="menda_02",
     user="root",
     password="trachel",
     host="127.0.0.1",
@@ -34,7 +34,7 @@ conn.close()
 file_path = sys.argv[1]
 
 # Create connection to the database
-engine = create_engine("mysql+pymysql://root:trachel@127.0.0.1:3306/menda_04")
+engine = create_engine("mysql+pymysql://root:trachel@127.0.0.1:3306/menda_02")
 
 # Read Excel file into DataFrame
 df = pd.read_excel(file_path)

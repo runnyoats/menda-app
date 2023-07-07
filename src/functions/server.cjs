@@ -58,7 +58,7 @@ app.post('/sync', express.json(), (req, res) => {
 	const { username, password, year } = req.body;
 
 	exec(
-		`python3 ./src/webscraper/sepkm_scraper.py "${username}" "${password}" "${year}"`,
+		`python3 ./src/functions/scraper.py "${username}" "${password}" "${year}"`,
 		(error, stdout, stderr) => {
 			if (error) {
 				console.log(`error: ${error.message}`);

@@ -8,19 +8,8 @@ node_modules
 !.env.example
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
-src/stores/student_data.csv
-src/stores/phq9_data.csv
-src/stores/backup csv/student_data.csv
-file-structure.txt
-src/api/__pycache__/murid_data.cpython-39.pyc
-src/api/__pycache__/sepkm_scraper.cpython-39.pyc
 src/functions/students_data.xlsx
-students_submissions_data.xlsx
-students_data.xlsx
-src/functions/tmp/paimonmoe_wish_history.xlsx
 src/webscraper/student_data.csv
 src/webscraper/phq9_data.csv
-student_data.csv
-semak_data.csv
-phq9_data.csv
-gad7_data.csv
+data-reset/students_submissions_data_original.xlsx
+src/functions/tmp

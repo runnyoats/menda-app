@@ -404,12 +404,29 @@ def process_csv_files(year, df_gad, df_phq, df_semak, df_students):
 
 def append_to_database(df_students, df_submissions):
     from sqlalchemy import create_engine
+    from sqlalchemy import exc
 
     # Import file into database
     print(f"Updating database")
     engine = create_engine("mysql+pymysql://root:trachel@127.0.0.1:3306/menda_02")
-    df_students.to_sql("students", con=engine, index=False, if_exists="append")
-    df_submissions.to_sql("submissions", con=engine, index=False, if_exists="append")
+
+    # Not the fastest implementation for skipping conflicts, but OK enough
+    # Imports are like 1-2 minutes longer when df is ~300 rows
+    for i in range(len(df_students)):
+        try:
+            df_students.iloc[i : i + 1].to_sql(
+                "students", con=engine, index=False, if_exists="append"
+            )
+        except exc.IntegrityError as e:
+            pass
+
+    for i in range(len(df_submissions)):
+        try:
+            df_submissions.iloc[i : i + 1].to_sql(
+                "submissions", con=engine, index=False, if_exists="append"
+            )
+        except exc.IntegrityError as e:
+            pass
 
 
 def sepkm_scraper(username, password, year):

@@ -76,10 +76,11 @@ def extract_students(session):
         "kelas",
     ]
     df_student = pd.DataFrame(table, columns=row_headers)
+    # df_student.to_csv(os.path.join(dirname, "tmp/students.csv"))
     return df_student
 
 
-# Function to extract table data for PHQ9, GAD7 & SEMAK
+# Function to extract table data for PHQ9 & GAD7
 def get_table_data(table, tableBody):
     for trTag in tableBody.find_all("tr", {"bgcolor": "#b3ffec"}):
         for tdTag in trTag.find_all("td"):
@@ -102,6 +103,33 @@ def get_table_data(table, tableBody):
 
         for thTag in trTag.find_all("th", {"width": "10%"}):
             table.append(thTag.text)
+
+    return table
+
+
+# Function to extract table data for SEMAK
+def get_semak_data(table, tableBody):
+    for trTag in tableBody.find_all("tr", {"bgcolor": "#b3ffec"}):
+        for tdTag in trTag.find_all("td"):
+            table.append(tdTag.text)
+
+        for thTag in trTag.find_all("th", {"width": "10%"}):
+            table.append(thTag.text)
+
+        for selectTag in trTag.find_all("select"):
+            selectBool = 0
+            tempOption = "text"
+            for optionTag in selectTag.find_all("option"):
+                if optionTag.has_attr("selected"):
+                    selectBool = 1
+                    tempOption = optionTag
+                    break
+
+            # Append a value, either the selected value or 0
+            if selectBool == 0:
+                table.append("0")
+            else:
+                table.append(tempOption.text)
 
     return table
 
@@ -156,6 +184,7 @@ def extract_phq9(session):
     df_phq = df_phq.drop(columns=["no"])
     df_phq["phq_tarikh"] = df_phq["phq_tarikh"].str.replace("\n", "")
     df_phq["phq_tarikh"] = df_phq["phq_tarikh"].str.replace(" ", "")
+    # df_phq.to_csv(os.path.join(dirname, "tmp/phq9_data.csv"))
 
     return df_phq
 
@@ -208,6 +237,7 @@ def extract_gad7(session):
     df_gad = df_gad.drop(columns=["no", "krisis"])
     df_gad["gad_tarikh"] = df_gad["gad_tarikh"].str.replace("\n", "")
     df_gad["gad_tarikh"] = df_gad["gad_tarikh"].str.replace(" ", "")
+    # df_gad.to_csv(os.path.join(dirname, "tmp/gad7_data.csv"))
 
     return df_gad
 
@@ -232,7 +262,7 @@ def extract_semak(session):
         if not tableBody or not tableBody.text.strip():
             break
 
-        table = get_table_data(table, tableBody)
+        table = get_semak_data(table, tableBody)
 
     # Reshape and print
     npTable = np.array(table).reshape(-1, 29)
@@ -275,6 +305,7 @@ def extract_semak(session):
     df_semak = df_semak.drop(columns=["no"])
     df_semak["semak_tarikh"] = df_semak["semak_tarikh"].str.replace("\n", "")
     df_semak["semak_tarikh"] = df_semak["semak_tarikh"].str.replace(" ", "")
+    # df_semak.to_csv(os.path.join(dirname, "tmp/semak_data.csv"))
 
     return df_semak
 
@@ -402,6 +433,3 @@ if __name__ == "__main__":
 
     result = sepkm_scraper(args.username, args.password, args.year)
     print(result)
-
-
-# sepkm_scraper("pee1101", "pgb", "2022")

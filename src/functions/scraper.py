@@ -42,12 +42,6 @@ def extract_students(session):
     ]
     kelas = ["AKIK", "BAIDURI", "DELIMA", "JED", "NILAM"]
 
-    # Testing purposes
-    # tahun = [
-    #     "TINGKATAN SATU",
-    # ]
-    # kelas = ["AKIK", "BAIDURI"]
-
     for p in tahun:
         params_class["tingkatan"] = p
         for q in kelas:
@@ -138,8 +132,6 @@ def extract_phq9(session):
     phq_url = "https://sepkm.com/e/minda_sihat3.php?id=PHQ9"
     params_page = {"page": ""}
 
-    # Testing purposes
-    # page = [str(i) for i in range(1, 3)]
     page = [str(i) for i in range(1, 1001)]
 
     table = []
@@ -193,8 +185,6 @@ def extract_gad7(session):
     gad_url = "https://sepkm.com/e/minda_sihat3.php?id=GAD7"
     params_page = {"page": ""}
 
-    # Testing purposes
-    # page = [str(i) for i in range(1, 3)]
     page = [str(i) for i in range(1, 1001)]
 
     table = []

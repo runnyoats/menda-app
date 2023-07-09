@@ -2,6 +2,11 @@ import pandas as pd
 import numpy as np
 import requests as rqst
 from bs4 import BeautifulSoup as bs
+import os
+
+script_path = os.path.realpath(__file__)
+
+(dirname, filename) = os.path.split(script_path)
 
 
 # Function to log into the site
@@ -70,9 +75,8 @@ def extract_students(session):
         "tingkatan",
         "kelas",
     ]
-    df_stud = pd.DataFrame(table, columns=row_headers)
-    df_stud.to_csv("student_data.csv")
-    return df_stud
+    df_student = pd.DataFrame(table, columns=row_headers)
+    return df_student
 
 
 # Function to extract table data for PHQ9, GAD7 & SEMAK
@@ -153,8 +157,6 @@ def extract_phq9(session):
     df_phq["phq_tarikh"] = df_phq["phq_tarikh"].str.replace("\n", "")
     df_phq["phq_tarikh"] = df_phq["phq_tarikh"].str.replace(" ", "")
 
-    # Convert df to csv
-    df_phq.to_csv("phq9_data.csv")
     return df_phq
 
 
@@ -207,8 +209,6 @@ def extract_gad7(session):
     df_gad["gad_tarikh"] = df_gad["gad_tarikh"].str.replace("\n", "")
     df_gad["gad_tarikh"] = df_gad["gad_tarikh"].str.replace(" ", "")
 
-    # Convert df to csv
-    df_gad.to_csv("gad7_data.csv")
     return df_gad
 
 
@@ -276,46 +276,38 @@ def extract_semak(session):
     df_semak["semak_tarikh"] = df_semak["semak_tarikh"].str.replace("\n", "")
     df_semak["semak_tarikh"] = df_semak["semak_tarikh"].str.replace(" ", "")
 
-    # Convert df to csv
-    df_semak.to_csv("semak_data.csv")
     return df_semak
 
 
-def process_csv_files(year, df_gad, df_phq, df_semak, df_stud):
+def process_csv_files(year, df_gad, df_phq, df_semak, df_student):
     # Unneeded column
-    df_stud = df_stud.drop(
+    df_student = df_student.drop(
         ["bil", "sijil_lahir", "alamat", "tingkatan", "kelas"], axis=1
     )
 
     # Create 'jantina' column based on 'kp' values
-    df_stud["jantina"] = df_stud["kp"].apply(
+    df_student["jantina"] = df_student["kp"].apply(
         lambda x: "L" if int(str(x)[-1]) % 2 == 1 else "P"
     )
 
     # Change date format
-    for date in df_stud["tarikh_lahir"]:
+    for date in df_student["tarikh_lahir"]:
         try:
             pd.to_datetime(date, format="%d-%m-%Y")
         except ValueError:
             print(f"Cannot convert {date}")
 
-    df_stud.to_csv("df_stud.csv")
-
     # Merge dataframes based on 'nama' column
     merged_df = (
-        df_stud.merge(df_semak, on="nama")
+        df_student.merge(df_semak, on="nama")
         .merge(df_phq, on="nama")
         .merge(df_gad, on="nama")
     ).copy()
-
-    merged_df.to_csv("submissions-part-0.5.csv")
 
     # Drop duplicate class columns
     merged_df = merged_df.drop(
         ["nama", "tarikh_lahir", "jantina", "kelas_x", "kelas_y"], axis=1
     ).copy()
-
-    merged_df.to_csv("submissions-part-1.csv")
 
     # Add 'sidang' column (according to year data chosen to extract from SePKM)
     merged_df["sidang"] = year
@@ -335,9 +327,6 @@ def process_csv_files(year, df_gad, df_phq, df_semak, df_stud):
     # Extract 'tingkatan' from 'kelas'
     merged_df["tingkatan"] = merged_df["kelas"].str.extract(r"T(\d+)-")
     merged_df["tingkatan"] = merged_df["tingkatan"].astype(int)
-
-    # Before the problematic line
-    merged_df.to_csv("submissions-part-2.csv")
 
     # Modify the problematic line to handle potential issues
     try:
@@ -375,8 +364,8 @@ def process_csv_files(year, df_gad, df_phq, df_semak, df_stud):
 
     merged_df = merged_df[new_columns]
 
-    df_stud.to_csv("students.csv")
-    merged_df.to_csv("submissions.csv")
+    df_student.to_csv(os.path.join(dirname, "tmp/students.csv"))
+    merged_df.to_csv(os.path.join(dirname, "tmp/submissions.csv"))
 
 
 def sepkm_scraper(username, password, year):
@@ -388,12 +377,12 @@ def sepkm_scraper(username, password, year):
     if not change_year(session, year):
         return {"error": "Year change failed"}, 400
 
-    df_stud = extract_students(session)
+    df_student = extract_students(session)
     df_phq9 = extract_phq9(session)
     df_gad7 = extract_gad7(session)
     df_semak = extract_semak(session)
 
-    process_csv_files(year, df_gad7, df_phq9, df_semak, df_stud)
+    process_csv_files(year, df_gad7, df_phq9, df_semak, df_student)
 
     return {
         "username": username,

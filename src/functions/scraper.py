@@ -75,9 +75,9 @@ def extract_students(session):
         "tingkatan",
         "kelas",
     ]
-    df_student = pd.DataFrame(table, columns=row_headers)
-    # df_student.to_csv(os.path.join(dirname, "tmp/students.csv"))
-    return df_student
+    df_students = pd.DataFrame(table, columns=row_headers)
+    # df_students.to_csv(os.path.join(dirname, "tmp/scraped_students_semiraw.csv"))
+    return df_students
 
 
 # Function to extract table data for PHQ9 & GAD7
@@ -184,7 +184,7 @@ def extract_phq9(session):
     df_phq = df_phq.drop(columns=["no"])
     df_phq["phq_tarikh"] = df_phq["phq_tarikh"].str.replace("\n", "")
     df_phq["phq_tarikh"] = df_phq["phq_tarikh"].str.replace(" ", "")
-    # df_phq.to_csv(os.path.join(dirname, "tmp/phq9_data.csv"))
+    # df_phq.to_csv(os.path.join(dirname, "tmp/scraped_phq9_data.csv"))
 
     return df_phq
 
@@ -237,7 +237,7 @@ def extract_gad7(session):
     df_gad = df_gad.drop(columns=["no", "krisis"])
     df_gad["gad_tarikh"] = df_gad["gad_tarikh"].str.replace("\n", "")
     df_gad["gad_tarikh"] = df_gad["gad_tarikh"].str.replace(" ", "")
-    # df_gad.to_csv(os.path.join(dirname, "tmp/gad7_data.csv"))
+    # df_gad.to_csv(os.path.join(dirname, "tmp/scraped_gad7_data.csv"))
 
     return df_gad
 
@@ -305,32 +305,35 @@ def extract_semak(session):
     df_semak = df_semak.drop(columns=["no"])
     df_semak["semak_tarikh"] = df_semak["semak_tarikh"].str.replace("\n", "")
     df_semak["semak_tarikh"] = df_semak["semak_tarikh"].str.replace(" ", "")
-    # df_semak.to_csv(os.path.join(dirname, "tmp/semak_data.csv"))
+    # df_semak.to_csv(os.path.join(dirname, "tmp/scraped_semak_data.csv"))
 
     return df_semak
 
 
-def process_csv_files(year, df_gad, df_phq, df_semak, df_student):
+def process_csv_files(year, df_gad, df_phq, df_semak, df_students):
+    print(f"Processing data")
+
     # Unneeded column
-    df_student = df_student.drop(
+    df_students = df_students.drop(
         ["bil", "sijil_lahir", "alamat", "tingkatan", "kelas"], axis=1
     )
 
     # Create 'jantina' column based on 'kp' values
-    df_student["jantina"] = df_student["kp"].apply(
+    df_students["jantina"] = df_students["kp"].apply(
         lambda x: "L" if int(str(x)[-1]) % 2 == 1 else "P"
     )
 
-    # Change date format
-    for date in df_student["tarikh_lahir"]:
-        try:
-            pd.to_datetime(date, format="%d-%m-%Y")
-        except ValueError:
-            print(f"Cannot convert {date}")
+    # Convert date columns to datetime
+    df_students["tarikh_lahir"] = pd.to_datetime(
+        df_students["tarikh_lahir"], format="%d-%m-%Y"
+    )
+
+    # Convert date format to yyyy-mm-dd
+    df_students["tarikh_lahir"] = df_students["tarikh_lahir"].dt.strftime("%Y-%m-%d")
 
     # Merge dataframes based on 'nama' column
     merged_df = (
-        df_student.merge(df_semak, on="nama")
+        df_students.merge(df_semak, on="nama")
         .merge(df_phq, on="nama")
         .merge(df_gad, on="nama")
     ).copy()
@@ -359,11 +362,8 @@ def process_csv_files(year, df_gad, df_phq, df_semak, df_student):
     merged_df["tingkatan"] = merged_df["kelas"].str.extract(r"T(\d+)-")
     merged_df["tingkatan"] = merged_df["tingkatan"].astype(int)
 
-    # Modify the problematic line to handle potential issues
-    try:
-        merged_df["kelas"] = merged_df["kelas"].str.split("-", expand=True)[1]
-    except KeyError:
-        print("Could not split 'kelas' or column '1' does not exist after split.")
+    # Extract 'kelas' after the '-' character
+    merged_df["kelas"] = merged_df["kelas"].str.split("-", expand=True)[1]
 
     # Convert 'merged_df' to the desired column order
     desired_order = ["kp", "sidang", "tingkatan", "kelas"]
@@ -393,10 +393,23 @@ def process_csv_files(year, df_gad, df_phq, df_semak, df_student):
         + ["semak_tarikh"]
     )
 
-    merged_df = merged_df[new_columns]
+    df_submissions = merged_df[new_columns]
 
-    df_student.to_csv(os.path.join(dirname, "tmp/students.csv"))
-    merged_df.to_csv(os.path.join(dirname, "tmp/submissions.csv"))
+    # Conversion for checking if necessary
+    df_students.to_csv(os.path.join(dirname, "tmp/scraped_students.csv"))
+    df_submissions.to_csv(os.path.join(dirname, "tmp/scraped_submissions.csv"))
+
+    return df_students, df_submissions
+
+
+def append_to_database(df_students, df_submissions):
+    from sqlalchemy import create_engine
+
+    # Import file into database
+    print(f"Updating database")
+    engine = create_engine("mysql+pymysql://root:trachel@127.0.0.1:3306/menda_02")
+    df_students.to_sql("students", con=engine, index=False, if_exists="append")
+    df_submissions.to_sql("submissions", con=engine, index=False, if_exists="append")
 
 
 def sepkm_scraper(username, password, year):
@@ -408,12 +421,16 @@ def sepkm_scraper(username, password, year):
     if not change_year(session, year):
         return {"error": "Year change failed"}, 400
 
-    df_student = extract_students(session)
+    df_students = extract_students(session)
     df_phq9 = extract_phq9(session)
     df_gad7 = extract_gad7(session)
     df_semak = extract_semak(session)
 
-    process_csv_files(year, df_gad7, df_phq9, df_semak, df_student)
+    df_students, df_submissions = process_csv_files(
+        year, df_gad7, df_phq9, df_semak, df_students
+    )
+
+    append_to_database(df_students, df_submissions)
 
     return {
         "username": username,

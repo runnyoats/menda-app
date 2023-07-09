@@ -311,7 +311,7 @@ def extract_semak(session):
 
 
 def process_csv_files(year, df_gad, df_phq, df_semak, df_students):
-    print(f"Processing data")
+    print(f"Processing data\n")
 
     # Unneeded column
     df_students = df_students.drop(
@@ -407,7 +407,7 @@ def append_to_database(df_students, df_submissions):
     from sqlalchemy import exc
 
     # Import file into database
-    print(f"Updating database")
+    print(f"Updating database\n")
     engine = create_engine("mysql+pymysql://root:trachel@127.0.0.1:3306/menda_02")
 
     # Not the fastest implementation for skipping conflicts, but OK enough

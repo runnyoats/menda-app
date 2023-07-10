@@ -1,5 +1,6 @@
 <script>
 	import Button from '../../components/Button.svelte';
+	import { pushToast } from '../../stores/toast';
 
 	let input;
 	let files = null;
@@ -20,8 +21,10 @@
 
 			if (response.ok) {
 				console.log('Data imported successfully');
+				pushToast('Data imported successfully!');
 			} else {
 				console.log('Failed to import data');
+				pushToast('Failed to import data.', 'error');
 			}
 		}
 	}
@@ -34,6 +37,7 @@
 		a.href = url;
 		a.download = 'students_submissions_data.xlsx';
 		a.click();
+		pushToast('Data exported successfully! Please download the file.');
 	}
 </script>
 

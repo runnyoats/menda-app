@@ -4,6 +4,7 @@
 	import '../app.css';
 	import SidebarItem from '../components/SidebarItem.svelte';
 	import Modal from 'svelte-simple-modal';
+	import Toast from '../components/Toast.svelte';
 
 	const routes = [
 		{ href: '/dashboard', name: 'Dashboard' },
@@ -34,6 +35,7 @@
 		</nav>
 	</div>
 	<Modal>
+		<Toast />
 		<main class="flex-1 p-5 overflow-auto bg-background-secondary">
 			<slot />
 		</main>

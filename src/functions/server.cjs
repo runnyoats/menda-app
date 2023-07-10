@@ -40,18 +40,14 @@ app.post('/import', upload.single('file'), (req, res) => {
 	const filePath = req.file.path;
 	// Quote the file path to handle spaces
 	exec(`python3 ./src/functions/import.py "${filePath}"`, (error, stdout, stderr) => {
-		if (error) {
-			console.log(`error: ${error.message}`);
+		if (error || stderr) {
+			console.log(`Failed to import data: ${error ? error.message : stderr}`);
+			res.status(500).send('Failed to import data');
 			return;
 		}
-		if (stderr) {
-			console.log(`stderr: ${stderr}`);
-			return;
-		}
-		console.log(`stdout: ${stdout}`);
+		console.log(`Data imported successfully: ${stdout}`);
+		res.send('Data imported successfully');
 	});
-
-	res.send('Data imported successfully');
 });
 
 app.post('/sync', express.json(), (req, res) => {

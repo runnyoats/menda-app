@@ -5,15 +5,20 @@
 	import { mdiCheckCircleOutline, mdiLoading } from '@mdi/js';
 	import { writable } from 'svelte/store';
 
-	// Create writable stores for isLoading and isSynced
+	// Create writable stores for isLoading, isSynced, and importFailed
 	const isLoading = writable(false);
 	const isSynced = writable(false);
+	const importFailed = writable(false);
 
 	let input;
 	let files = null;
 
 	function handleFileSelection() {
 		if (input) input.click();
+		// Reset booleans when file is re-uploaded
+		isLoading.set(false);
+		isSynced.set(false);
+		importFailed.set(false);
 	}
 
 	async function importData() {
@@ -32,11 +37,13 @@
 				console.log('Data imported successfully');
 				isLoading.set(false); // Set isLoading to false
 				isSynced.set(true); // Set isSynced to true
+				importFailed.set(false); // Set importFailed to false
 				pushToast('Data imported successfully!');
 			} else {
 				console.log('Failed to import data');
 				isLoading.set(false); // Set isLoading to false
 				isSynced.set(false); // Set isSynced to false
+				importFailed.set(true); // Set importFailed to true
 				pushToast('Failed to import data.', 'error');
 			}
 		}
@@ -74,10 +81,16 @@
 		{/if}
 	</div>
 	<p class="text-white mt-4">
-		{#if $isLoading || $isSynced}
+		{#if $isLoading || $isSynced || $importFailed}
 			Import Status:
-			<span class={`font-bold ${$isSynced ? 'text-green-400' : 'text-yellow-400'}`}>
-				{#if $isSynced}
+			<span
+				class={`font-bold ${
+					$importFailed ? 'text-red-400' : $isSynced ? 'text-green-400' : 'text-yellow-400'
+				}`}
+			>
+				{#if $importFailed}
+					Failed
+				{:else if $isSynced}
 					Synced
 					<Icon path={mdiCheckCircleOutline} className="text-green-400" />
 				{:else}
